@@ -43,7 +43,7 @@ class MBillsTransaction(models.Model):
 
     payment_token_number = models.CharField(max_length=255)
 
-    status = models.CharField(max_length=255, choices=TRANSACTION_STATUS_CHOICES, default=TX_ACCEPTED)
+    status = models.IntegerField(choices=TRANSACTION_STATUS_CHOICES, default=TX_ACCEPTED)
 
     transaction_type = models.CharField(max_length=255, default='T')
     settled_amount = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0'))

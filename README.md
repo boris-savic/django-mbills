@@ -10,13 +10,34 @@ The library is pretty lightweight only containing one model and a few helper fun
 
 ## Quick Start
 
-TODO - include in apps, add settings, example calls...
+1. Add *mbills* to installed apps:
 
+     
     INSTALLED_APPS = [
         ...
+        
         'mbills',
+        
+        ...
     ]
 
 
+2. Run migrations
+     
+     
+    $ python manage.py migrate
 
+
+
+3. Implement your API
+
+In your API calls or Views you can issue calls to:
+
+    - generate_new_transaction
+    - update_transaction_status
+    - handle_webhook
+    
+
+
+For more detailed documentation check the project source.
 

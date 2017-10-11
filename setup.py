@@ -1,8 +1,8 @@
 from distutils.core import setup
 setup(
   name='django-mbills',
-  packages=['django-mbills'],
-  version='0.1.3',
+  packages=['mbills'],
+  version='0.1.4',
   description='Django implementation of the Hal MBills APIs.',
   author='Boris Savic',
   author_email='boris70@gmail.com',

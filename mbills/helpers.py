@@ -9,7 +9,6 @@ from python_mbills.exceptions import SignatureValidationException
 
 from mbills.models import MBillsTransaction
 
-
 MBILLS_RSA_PUBLIC_KEY = getattr(settings, 'MBILLS_RSA_PUBLIC_KEY', None)
 MBILLS_API_KEY = getattr(settings, 'MBILLS_API_KEY', None)
 MBILLS_SECRET_KEY = getattr(settings, 'MBILSS_SECRET_KEY', None)
@@ -22,16 +21,16 @@ if MBILLS_API_KEY is None or MBILLS_SECRET_KEY is None:
 if MBILLS_RSA_PUBLIC_KEY is None:
     warnings.warn("Failed to load MBILLS_RSA_PUBLIC_KEY from settings. None of the API calls will be verified!")
 
-
 # Configure the class only once...better than loading everytime a request is made...
-mbills_api = MBillsAPI(api_key=MBILLS_API_KEY, shared_secret=MBILLS_SECRET_KEY, mbills_rsa_pub_key=MBILLS_RSA_PUBLIC_KEY,
+mbills_api = MBillsAPI(api_key=MBILLS_API_KEY, shared_secret=MBILLS_SECRET_KEY,
+                       mbills_rsa_pub_key=MBILLS_RSA_PUBLIC_KEY,
                        nonce_length=10, api_endpoint=MBILLS_API_ENDPOINT)
 
 
 def generate_new_transaction(amount, purpose, payment_reference=None, order_id=None, channel_id=None, capture=True):
     """
     Create a new transaction object. 
-    
+
     :param amount: 
     :param purpose: 
     :param payment_reference: 
@@ -40,7 +39,8 @@ def generate_new_transaction(amount, purpose, payment_reference=None, order_id=N
     :param capture: 
     :return: 
     """
-    tx_id, token_number, status = mbills_api.create_new_sale(amount, purpose, payment_reference, order_id, channel_id, capture)
+    tx_id, token_number, status = mbills_api.create_new_sale(amount, purpose, payment_reference, order_id, channel_id,
+                                                             capture)
 
     mbills_transaction = MBillsTransaction(transaction_id=tx_id,
                                            currency=mbills_api.currency,
@@ -54,6 +54,37 @@ def generate_new_transaction(amount, purpose, payment_reference=None, order_id=N
                                            ).save()
 
     return mbills_transaction
+
+
+def capture_transaction(transaction, capture_amount, message=''):
+    """
+    Capture existing transaction. 
+    :param transaction: 
+    :param capture_amount: 
+    :param message: 
+    :return: 
+    """
+    status_code = mbills_api.capture_sale(transaction.transaction_id, capture_amount=capture_amount, message=message)
+
+    transaction.status = status_code
+    transaction.save()
+
+    return transaction
+
+
+def void_transaction(transaction, message=''):
+    """
+    Void transaction.
+    :param transaction: 
+    :param message: 
+    :return: 
+    """
+    status_code = mbills_api.void_preauthorization(transaction.transaction_id, message=message)
+
+    transaction.status = status_code
+    transaction.save()
+
+    return transaction
 
 
 def update_transaction_status(transaction):
@@ -70,12 +101,12 @@ def update_transaction_status(transaction):
 def handle_webhook(json_data):
     """
     Fetch the transaction from the database and update it's status.
-    
+
     If the transaction does not exist in the database this function will 
     raise a DoesNotExist exception on the MBillsTransaction object.
-    
+
     If the received webhook data server signature is not valid it will raise SignatureValidationException exception.
-    
+
     :param json_data: data received from the webhook
     :return: 
     """

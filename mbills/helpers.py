@@ -52,7 +52,8 @@ def generate_new_transaction(amount, purpose, payment_reference=None, order_id=N
                                            channel_id=channel_id,
                                            payment_token_number=token_number,
                                            status=status,
-                                           ).save()
+                                           )
+    mbills_transaction.save()
 
     return mbills_transaction
 

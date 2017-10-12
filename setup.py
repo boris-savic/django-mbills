@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
   name='django-mbills',
   packages=['mbills', 'mbills.migrations'],
-  version='0.1.7',
+  version='0.1.8',
   description='Django implementation of the Hal MBills APIs.',
   author='Boris Savic',
   author_email='boris70@gmail.com',

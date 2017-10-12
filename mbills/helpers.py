@@ -43,6 +43,7 @@ def generate_new_transaction(amount, purpose, payment_reference=None, order_id=N
                                                              capture)
 
     mbills_transaction = MBillsTransaction(transaction_id=tx_id,
+                                           amount=amount,
                                            currency=mbills_api.currency,
                                            purpose=purpose,
                                            payment_reference=payment_reference,

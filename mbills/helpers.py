@@ -7,7 +7,7 @@ from django.conf import settings
 from python_mbills.api import MBillsAPI
 from python_mbills.exceptions import SignatureValidationException
 
-from mbills.models import MBillsTransaction
+from mbills.models import MBillsTransaction, TX_PAID
 
 MBILLS_RSA_PUBLIC_KEY = getattr(settings, 'MBILLS_RSA_PUBLIC_KEY', None)
 MBILLS_API_KEY = getattr(settings, 'MBILLS_API_KEY', None)
@@ -121,12 +121,13 @@ def handle_webhook(json_data):
 
 
 def _update_transaction_from_data(transaction, json_data):
-    # Update the fields...
-    transaction.status = json_data.get('status', transaction.status)
-    transaction.settled_amount = Decimal(json_data.get('settledamount', 0) / 100.0)
-    transaction.fees = Decimal(json_data.get('fees', 0) / 100.0)
-    transaction.transaction_type = json_data.get('transactiontype', transaction.transaction_type)
+    if transaction.status != TX_PAID:  # Do not update if it's already paid - final state
+        # Update the fields...
+        transaction.status = json_data.get('status', transaction.status)
+        transaction.settled_amount = Decimal(json_data.get('settledamount', 0) / 100.0)
+        transaction.fees = Decimal(json_data.get('fees', 0) / 100.0)
+        transaction.transaction_type = json_data.get('transactiontype', transaction.transaction_type)
 
-    transaction.save()
+        transaction.save()
 
     return transaction

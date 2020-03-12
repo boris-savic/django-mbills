@@ -89,6 +89,23 @@ def void_transaction(transaction, message=''):
     return transaction
 
 
+def refund_transaction(transaction, refund_amount):
+    """
+    Refund transaction.
+
+    :param transaction:
+    :param refund_amount:
+    :return:
+    """
+    status_code = mbills_api.refund_transaction(transaction.transaction_id, refund_amount=refund_amount)
+
+    transaction.refunded = True
+    transaction.refunded_amount = refund_amount
+    transaction.save()
+
+    return transaction
+
+
 def update_transaction_status(transaction):
     """
     Update the transaction status and return the refreshed transcation object

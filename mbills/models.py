@@ -49,6 +49,9 @@ class MBillsTransaction(models.Model):
     settled_amount = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0'))
     fees = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0'))
 
+    refunded = models.BooleanField(default=False)
+    refunded_amount = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0'))
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

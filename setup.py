@@ -11,6 +11,6 @@ setup(
   keywords=['mbills', 'halcom', 'django' ],
   classifiers=[],
   install_requires=[
-        'python_mbills>=0.1.6',
+        'python_mbills>=0.1.7',
     ]
 )
